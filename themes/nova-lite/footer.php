@@ -16,10 +16,14 @@
                     <div class="span12 copyright" >
                     
                         <p>
-						©2017&nbsp;&nbsp;&nbsp;&nbsp;Hannaseyes&nbsp;&nbsp;&nbsp;&nbsp;感谢支持&nbsp;&nbsp;&nbsp;&nbsp;|
-                        <a href="http://www.miitbeian.gov.cn/" rel="external nofollow" target="_blank">
-							<?php echo get_option( 'zh_cn_l10n_icp_num' );?>
-						</a>
+                            <?php if (novalite_setting('novalite_copyright_text')): ?>
+                               <?php echo stripslashes(novalite_setting('novalite_copyright_text','html')); ?>
+                            <?php else: ?>
+                              <?php _e('Copyright','novalite'); ?> <?php echo get_bloginfo("name"); ?> <?php echo date("Y"); ?> 
+                            <?php endif; ?> 
+                            | <?php _e('Theme by','novalite'); ?> <a href="http://www.themeinprogress.com/" target="_blank">Theme in Progress</a> |
+                            <a href="<?php echo esc_url( __( 'http://wordpress.org/', 'novalite' ) ); ?>" title="<?php esc_attr_e( 'A Semantic Personal Publishing Platform', 'novalite' ); ?>" rel="generator"><?php printf( __( 'Proudly powered by %s', 'novalite' ), 'WordPress' ); ?></a>
+                        
                         </p>
                     
                     </div>
@@ -37,7 +41,7 @@
 <div id="back-to-top">
 <a href="#" style=""><i class="icon-chevron-up"></i></a> 
 </div>
-
+    
 <?php wp_footer() ?>  
  
 </body>
