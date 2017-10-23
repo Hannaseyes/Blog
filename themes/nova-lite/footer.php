@@ -16,14 +16,9 @@
                     <div class="span12 copyright" >
                     
                         <p>
-                            <?php if (novalite_setting('novalite_copyright_text')): ?>
-                               <?php echo stripslashes(novalite_setting('novalite_copyright_text','html')); ?>
-                            <?php else: ?>
-                              <?php _e('Copyright','novalite'); ?> <?php echo get_bloginfo("name"); ?> <?php echo date("Y"); ?> 
-                            <?php endif; ?> 
-                            | <?php _e('Theme by','novalite'); ?> <a href="http://www.themeinprogress.com/" target="_blank">Theme in Progress</a> |
-                            <a href="<?php echo esc_url( __( 'http://wordpress.org/', 'novalite' ) ); ?>" title="<?php esc_attr_e( 'A Semantic Personal Publishing Platform', 'novalite' ); ?>" rel="generator"><?php printf( __( 'Proudly powered by %s', 'novalite' ), 'WordPress' ); ?></a>
-                        
+							<a href="http://www.miitbeian.gov.cn/" rel="external nofollow" target="_blank">
+								<span>©2017&nbsp;Hannaseyes|&nbsp;</span><?php echo get_option( 'zh_cn_l10n_icp_num' );?>|汉娜之眼-一个有梦想的工程师
+							</a>
                         </p>
                     
                     </div>
