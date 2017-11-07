@@ -16,9 +16,7 @@
                     <div class="span12 copyright" >
                     
                         <p>
-							<a href="http://www.miitbeian.gov.cn/" rel="external nofollow" target="_blank">
-								<span>©2017&nbsp;Hannaseyes|&nbsp;</span><?php echo get_option( 'zh_cn_l10n_icp_num' );?>|汉娜之眼-一个有梦想的工程师
-							</a>
+                            ©2017 Hannaseyes 京ICP备16055621号|汉娜之眼--一名路过的小码农
                         </p>
                     
                     </div>
