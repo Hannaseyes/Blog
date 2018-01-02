@@ -16,7 +16,7 @@
                     <div class="span12 copyright" >
                     
                         <p>
-                            ©2017 Hannaseyes 京ICP备16055621号|汉娜之眼--一名路过的小码农
+							京ICP备16055621号|汉娜之眼-Hannaseyes|一名路过的小码农
                         </p>
                     
                     </div>
