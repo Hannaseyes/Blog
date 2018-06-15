@@ -343,7 +343,7 @@ if (!function_exists('novalite_scripts_styles')) {
 		if ( get_theme_mod('novalite_skin') && get_theme_mod('novalite_skin') <> "turquoise" )
 			wp_enqueue_style( 'novalite-' . get_theme_mod('novalite_skin') , get_template_directory_uri() . '/assets/skins/' . get_theme_mod('novalite_skin') . '.css' ); 
 
-		wp_enqueue_style( 'novalite-google-fonts', '//fonts.googleapis.com/css?family=Montez|Oxygen|Yanone+Kaffeesatz&subset=latin,latin-ext' );
+		wp_enqueue_style( 'novalite-google-fonts', 'http://fonts.googleapis.com?family=Montez|Oxygen|Yanone+Kaffeesatz&subset=latin,latin-ext' );
 
 		wp_enqueue_script ( 'novalite-html5', get_template_directory_uri().'/assets/scripts/html5.js');
 		wp_script_add_data ( 'novalite-html5', 'conditional', 'IE 8' );
