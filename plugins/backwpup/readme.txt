@@ -1,18 +1,16 @@
 === BackWPup - WordPress Backup Plugin ===
-Contributors: inpsyde, cocreation, danielhuesken, Bueltge, nullbyte
+Contributors: inpsyde, danielhuesken, Bueltge, nullbyte
 Tags: backup, database backup, cloud backup, restore, wordpress backup
 Requires at least: 3.9
-Tested up to: 4.9.8
-Requires PHP: 5.3
-Stable tag: 3.6.5
+Tested up to: 5.0.3
+Requires PHP: 5.3.3
+Stable tag: 3.6.7
 License: GPLv3
 License URI: http://www.gnu.org/licenses/gpl-3.0.html
 
 Schedule complete automatic backups of your WordPress installation. Decide which content will be stored (Dropbox, S3…). This is the free version
 
 == Description ==
-
-**30% Black Friday - Cyber Monday discount for BackWPup PRO - only valid from 23 to 26 November [Save 30% and get the PRO now!](https://backwpup.com/#buy)**
 
 The **backup plugin** **[BackWPup](https://backwpup.com/)** can be used to save your complete installation including /wp-content/ and push them to an external Backup Service, like **Dropbox**, **S3**, **FTP** and many more, see list below. With a single backup .zip file you are able to easily restore an installation. Please understand: this free version will not be supported as good as the [BackWPup Pro version](https://backwpup.com). With our premium version you get first class support and more features.
 
@@ -22,16 +20,16 @@ The **backup plugin** **[BackWPup](https://backwpup.com/)** can be used to save 
 * Optimize Database
 * Check and repair Database
 * File backup
-* Backups in zip, tar, tar.gz, tar.bz2 format *(needs gz, bz2, ZipArchive)*
+* Backups in zip, tar, tar.gz format *(needs gz, ZipArchive)*
 * Store backup to directory
 * Store backup to FTP server *(needs ftp)*
 * Store backup to Dropbox *(needs curl)*
-* Store backup to S3 services *(needs PHP 5.3.3, needs curl)*
-* Store backup to Microsoft Azure (Blob) *(needs PHP 5.3.2, curl)*
-* Store backup to RackSpaceCloud *(needs PHP 5.3.2, curl)*
+* Store backup to S3 services *(needs curl)*
+* Store backup to Microsoft Azure (Blob) *(needs curl)*
+* Store backup to RackSpaceCloud *(curl)*
 * Store backup to SugarSync *(needs curl)*
-* PRO: Store backup to Amazon Glacier *(needs PHP 5.3.3, curl)*
-* PRO: Store backup to Google Drive *(needs PHP 5.3.3, curl)*
+* PRO: Store backup to Amazon Glacier *(needs curl)*
+* PRO: Store backup to Google Drive *(needs curl)*
 * Send logs and backups by email
 * Multi-site support only as network admin
 * Pro version and support available - [BackWPup Pro](https://backwpup.com)
@@ -41,7 +39,7 @@ The **backup plugin** **[BackWPup](https://backwpup.com/)** can be used to save 
 In case you need to comply with the new GDPR regulation, check out our post [BacKWPup, Backups and GDPR](https://backwpup.com/docs/backwpup-backups-and-gdpr/).
 
 = Requirements =
-* WordPress 3.9 and PHP 5.3 required! (read more about [recommended php version and why you should switch to modern php](https://inpsyde.com/en/wordpress-recommended-php-version-update-php))
+* WordPress 3.9 and PHP 5.3.3 required! (read more about [recommended php version and why you should switch to modern php](https://inpsyde.com/en/wordpress-recommended-php-version-update-php))
 * To use the Plugin with full functionality PHP 5.3.3 with mysqli, FTP,gz, bz2, ZipArchive and curl is needed.
 * Plugin functions that don't work because of your server settings, will not be displayed in admin area.
 
@@ -162,10 +160,28 @@ Yes. You need to have writing access to the wp-config.php file (usually residing
 [You can find a detailed tutorial in the BackWPup documentation.](https://backwpup.com/docs/install-backwpup-pro-activate-licence/)
 
 == Changelog ==
+= Version 3.6.7 =
+Release Date: Jan 23, 2019
+
+* Fixed: More margin to dashboard footer to avoid save button unclickable
+* Fixed: On folder sync destination folder is not created
+* Fixed: Encryption option should not be displayed for syncing job
+* Fixed: Restore stuck on file restore step because of file permission issue
+* Fixed: "Do not delete files while syncing to destination!" not working
+* Tweak: Increase PHP Version from 5.3.2 to 5.3.3
+* Tweak: Encryption Settings description and ui improvements
+* Tweak: On restore error, include `restore.dat` file along with the log when user download the restore log file
+* Tweak: Lock server to execute same task multiple time when one is already in progress
+
+= Version 3.6.6 =
+Release Date: Nov 28, 2018
+
+* Fixed: Files could be excluded from the backup because of incorrect string comparison
+
 = Version 3.6.5 =
 Release Date: Nov 23, 2018
 
-* Fixed: Admin notice won't update correctly
+* Fixed: Admin notice won’t update correctly
 
 = Version 3.6.4 =
 Release Date: Nov 22, 2018
@@ -177,7 +193,7 @@ Release Date: Nov 22, 2018
 * Fixed: Exclude restore directories to be copied during a restore phase
 * Fixed: Standalone App has no encryption support
 * Fixed: Open basedir, backup dir is not within the allowed path
-* Fixed: Unable to download backup file because of mime_content_type function missing in some enviroment
+* Fixed: Unable to download backup file because of mime_content_type function missing in some environment
 * Tweak: Encryption Settings UI
 * Tweak: Minor translations issues
 * Tweak: Remove languages files from the free version, the plugin will use translation.wordpress.org
