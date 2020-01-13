@@ -1,16 +1,16 @@
 === BackWPup - WordPress Backup Plugin ===
-Contributors: inpsyde, danielhuesken, Bueltge, nullbyte
+Contributors: inpsyde, danielhuesken, Bueltge, nullbyte, wido, dinamiko
 Tags: backup, database backup, cloud backup, restore, wordpress backup
 Requires at least: 3.9
-Tested up to: 5.0.3
-Requires PHP: 5.3.3
-Stable tag: 3.6.7
-License: GPLv3
-License URI: http://www.gnu.org/licenses/gpl-3.0.html
+Tested up to: 5.3
+Requires PHP: 5.6
+Stable tag: 3.7.0
+License: GPLv2+
 
 Schedule complete automatic backups of your WordPress installation. Decide which content will be stored (Dropbox, S3…). This is the free version
 
 == Description ==
+**Use the quiet days between the years and clean up your website! But don't forget to make a backup before, in case anything goes wrong! We offer a 30% discount on all BackWPup PRO licences until January 13th, 2020, to keep your website absolutely safe! [Save Now!](https://backwpup.com/#buy)**
 
 The **backup plugin** **[BackWPup](https://backwpup.com/)** can be used to save your complete installation including /wp-content/ and push them to an external Backup Service, like **Dropbox**, **S3**, **FTP** and many more, see list below. With a single backup .zip file you are able to easily restore an installation. Please understand: this free version will not be supported as good as the [BackWPup Pro version](https://backwpup.com). With our premium version you get first class support and more features.
 
@@ -160,8 +160,55 @@ Yes. You need to have writing access to the wp-config.php file (usually residing
 [You can find a detailed tutorial in the BackWPup documentation.](https://backwpup.com/docs/install-backwpup-pro-activate-licence/)
 
 == Changelog ==
+
+= Version 3.7.0 =
+Release Date: Nov 27, 2019
+
+* Updated: Raise the minimum PHP version required by BWU to 5.6
+* Updated: Microsoft Azure Storage Blob PHP Client Library
+* Fixed: S3 custom url not used for bucket selection
+* Fixed: S3 malformed error message when authentication credentials are wrong
+* Fixed: S3 selecting an invalid service raise no error
+* Fixed: Rackspace uses old cacert.pem file
+* Fixed: Log page not correcty sorted
+* Added: Option to enable or disable the phone home client
+
+= Version 3.6.10 =
+Release Date: July 8, 2019
+
+* Fixed: Azure Supports https on uploading
+* Fixed: Auto remove old backup files not working when archive file name have prefix "backwpup"
+* Added: Filter to extend list of S3 destinations
+* Removed: S3 multipart upload checkbox, now in destination definition
+* Updated: Amazon AWS SDK for S3 services, now PHP 5.5+ is needed
+* Added: Filter to extend list of Glacier destinations (Pro version)
+* Updated: Amazon AWS SDK for Glacier, now PHP 5.5+ is needed (Pro version)
+
+= Version 3.6.9 =
+Release Date: May 7, 2019
+
+* Fixed: Google Drive destination automatically remove old backup files
+* Fixed: Do not expose destination data within the manifest file
+* Fixed: Update Dropbox Tokens
+* Fixed: Restore error: MIME returns html instead of event stream
+* Fixed: Log files name are predictable because of weak hash
+* Fixed: ZipArchive doesn't fallback to PclZip in Restore
+* Fixed: Session already started could cause issues during ajax calls
+* Fixed: Wrong vendor include path for PEAR using MS Azure
+* Fixed: Decryption Key prompt when any error occur during the first step of a Restore
+* Fixed: Phone home client notice and php 5 issue with php short echo tag
+* Fixed: mime_content_type function may not exists prevent backup decryption
+* Improve: Restore Log and produce report for user feedback
+* Changed: License changed to GPLv2+
+
+= Version 3.6.8 =
+Release Date: Feb 25, 2019
+
+* Fixed: Typos in settings job page
+* Fixed: Rest API admin note language doesn't change when changing user language
+
 = Version 3.6.7 =
-Release Date: Jan 23, 2019
+Release Date: Jan 22, 2019
 
 * Fixed: More margin to dashboard footer to avoid save button unclickable
 * Fixed: On folder sync destination folder is not created

@@ -9,107 +9,52 @@
  * It is also available at this URL: http://www.gnu.org/licenses/gpl-3.0.txt
  */
 
+define( 'NOVA_LITE_MIN_PHP_VERSION', '5.3' );
+
 /*-----------------------------------------------------------------------------------*/
-/* REQUIRE */
+/* Switches back to the previous theme if the minimum PHP version is not met */
 /*-----------------------------------------------------------------------------------*/ 
 
-if (!function_exists('novalite_require')) {
+if ( ! function_exists( 'nova_lite_check_php_version' ) ) {
 
-	function novalite_require($folder) {
+	function nova_lite_check_php_version() {
 	
-		if (isset($folder)) : 
-		
-			$dir = get_template_directory() . $folder ;  
-				
-			$files = scandir($dir);  
-				  
-			foreach ($files as $key => $value) {  
-
-				if ( !in_array($value,array(".DS_Store",".","..") ) && !strstr( $value, '._' ) ) { 
-						
-					if ( !is_dir( $dir . $value) ) { 
-							
-						require_once $dir . $value;
-						
-					} 
-					
-				} 
-
-			}  
-				
-		
-		endif;
-		
+		if ( version_compare( PHP_VERSION, NOVA_LITE_MIN_PHP_VERSION, '<' ) ) {
+			add_action( 'admin_notices', 'nova_lite_min_php_not_met_notice' );
+			switch_theme( get_option( 'theme_switched' ));
+			return false;
+	
+		};
 	}
+
+	add_action( 'after_switch_theme', 'nova_lite_check_php_version' );
 
 }
 
 /*-----------------------------------------------------------------------------------*/
-/* SCRIPTS */
+/* An error notice that can be displayed if the Minimum PHP version is not met */
 /*-----------------------------------------------------------------------------------*/ 
 
-if (!function_exists('novalite_enqueue_script')) {
+if ( ! function_exists( 'nova_lite_min_php_not_met_notice' ) ) {
 
-	function novalite_enqueue_script($folder) {
-	
-		if ( isset($folder) ) : 
-	
-			$dir = get_template_directory() . $folder ;  
-				
-			$files = scandir($dir);  
-				  
-			foreach ($files as $key => $value) {  
-
-				if ( !in_array($value,array(".DS_Store",".","..") ) && !strstr( $value, '._' ) ) { 
-						
-					if ( !is_dir( $dir . $value ) && strstr ( $value, 'js' )) { 
-							
-						wp_enqueue_script( str_replace('.js','',$value), get_template_directory_uri() . $folder . "/" . $value , array('jquery'), FALSE, TRUE ); 
-						
-					} 
-					
-				} 
-
-			}  
-
-		endif;
+	function nova_lite_min_php_not_met_notice() {
+		?>
+		<div class="notice notice-error is_dismissable">
+			<p>
+				<?php esc_html_e('You need to update your PHP version to run this theme.', 'nova-lite' ); ?><br />
+				<?php
+				printf(
+					esc_html__( 'Actual version is: %1$s, required version is: %2$s.', 'nova-lite' ),
+					PHP_VERSION,
+					NOVA_LITE_MIN_PHP_VERSION
+				);
+				?>
+			</p>
+		</div>
+		<?php
 	
 	}
-
-}
-
-/*-----------------------------------------------------------------------------------*/
-/* STYLES */
-/*-----------------------------------------------------------------------------------*/ 
-
-if (!function_exists('novalite_enqueue_style')) {
-
-	function novalite_enqueue_style($folder) {
 	
-		if (isset($folder)) : 
-	
-			$dir = get_template_directory() . $folder ;  
-				
-			$files = scandir($dir);  
-				  
-			foreach ($files as $key => $value) {  
-
-				if ( !in_array($value,array(".DS_Store",".","..") ) && !strstr( $value, '._' ) ) { 
-						
-					if ( !is_dir( $dir . $value ) && strstr ( $value, 'css' )) { 
-						
-						wp_enqueue_style( str_replace('.css','',$value), get_template_directory_uri() . $folder . "/" . $value ); 
-						
-					} 
-					
-				} 
-
-			}  
-			
-		endif;
-	
-	}
-
 }
 
 /*-----------------------------------------------------------------------------------*/
@@ -257,7 +202,7 @@ if (!function_exists('novalite_new_excerpt_more')) {
 	function novalite_new_excerpt_more() {
 		
 		global $post;
-		return '<p><a class="button" href="'.get_permalink($post->ID).'" title="More">  ' . esc_html__( "Read More","novalite") . ' →</a></p>';
+		return '<p><a class="button" href="'.get_permalink($post->ID).'" title="More">  ' . esc_html__( "Read More","nova-lite") . ' →</a></p>';
 	
 	}
 	
@@ -350,31 +295,44 @@ if (!function_exists('novalite_scripts_styles')) {
 
 	function novalite_scripts_styles() {
 
-		global $wp_styles;
+		wp_enqueue_style( 'nova-lite-style', get_stylesheet_uri(), array() );
 
-		wp_enqueue_style( 'my-theme-ie', get_stylesheet_directory_uri() . "/assets/css/ie.css", array( 'my-theme' )  );
-		$wp_styles->add_data( 'my-theme-ie', 'conditional', 'chrome' );
+		$googleFontsArgs = array(
+			'family' =>	str_replace('|', '%7C','Montez|Oxygen|Yanone+Kaffeesatz'),
+			'subset' =>	'latin,latin-ext'
+		);
 
-		novalite_enqueue_style('/assets/css');
+		wp_enqueue_style('google-fonts', add_query_arg ( $googleFontsArgs, "https://fonts.googleapis.com/css" ), array(), '1.0.0' );
+		wp_enqueue_style('bootstrap', get_template_directory_uri() . '/assets/css/bootstrap.css', array(), '3.3.7' );
+		wp_enqueue_style('bootstrap-responsive', get_template_directory_uri() . '/assets/css/bootstrap-responsive.css', array(), '3.3.7' );
+		wp_enqueue_style('flexslider', get_template_directory_uri() . '/assets/css/flexslider.css', array(), '3.3.7' );
+		wp_enqueue_style('font-awesome', get_template_directory_uri() . '/assets/css/font-awesome.css', array(), '3.3.7' );
+		wp_enqueue_style('nivoslider', get_template_directory_uri() . '/assets/css/nivoslider.css', array(), '3.3.7' );
+		wp_enqueue_style('prettyPhoto', get_template_directory_uri() . '/assets/css/prettyPhoto.css', array(), '3.3.7' );
 
-		if ( get_theme_mod('novalite_skin') && get_theme_mod('novalite_skin') <> "turquoise" )
-			wp_enqueue_style( 'novalite-' . get_theme_mod('novalite_skin') , get_template_directory_uri() . '/assets/skins/' . get_theme_mod('novalite_skin') . '.css' ); 
-
-		wp_enqueue_style( 'novalite-google-fonts', '//fonts.googleapis.com/css?family=Montez|Oxygen|Yanone+Kaffeesatz&subset=latin,latin-ext' );
-
-		wp_enqueue_script ( 'novalite-html5', get_template_directory_uri().'/assets/scripts/html5.js');
-		wp_script_add_data ( 'novalite-html5', 'conditional', 'IE 8' );
+		if ( get_theme_mod('novalite_skin') && get_theme_mod('novalite_skin') <> "turquoise" ) :
 		
-		wp_enqueue_script ( 'novalite-selectivizr', get_template_directory_uri().'/assets/scripts/selectivizr-min.js');
-		wp_script_add_data ( 'novalite-selectivizr', 'conditional', 'IE 8' );
+			wp_enqueue_style(
+				'nova-lite-' . get_theme_mod('novalite_skin'),
+				get_template_directory_uri() . '/assets/skins/' . get_theme_mod('novalite_skin') . '.css'
+				
+			); 
+		
+		endif;
 
 		if ( is_singular() ) wp_enqueue_script( 'comment-reply' );
 	
-		wp_enqueue_script( "jquery-ui-core", array('jquery'));
-		wp_enqueue_script( "jquery-ui-tabs", array('jquery'));
-		
-		novalite_enqueue_script('/assets/js');
-	
+		wp_enqueue_script( 'jquery-easing', get_template_directory_uri() . '/assets/js/jquery.easing.js' , array('jquery'), '1.3', TRUE ); 
+		wp_enqueue_script( 'jquery-scrollTo', get_template_directory_uri() . '/assets/js/jquery.scrollTo.js' , array('jquery'), '1.3', TRUE ); 
+		wp_enqueue_script( 'jquery-tinynav', get_template_directory_uri() . '/assets/js/jquery.tinynav.js' , array('jquery'), '1.3', TRUE ); 
+		wp_enqueue_script( 'prettyPhoto', get_template_directory_uri() . '/assets/js/prettyPhoto.js' , array('jquery'), '1.3', TRUE ); 
+		wp_enqueue_script( 'nova-lite-template', get_template_directory_uri() . '/assets/js/template.js' , array('jquery'), '1.0.0', TRUE ); 
+
+		wp_enqueue_script('html5shiv', get_template_directory_uri().'/assets/scripts/html5shiv.js', FALSE, '3.7.3');
+		wp_script_add_data('html5shiv', 'conditional', 'IE 8' );
+		wp_enqueue_script('selectivizr', get_template_directory_uri().'/assets/scripts/selectivizr.js', FALSE, '1.0.3b');
+		wp_script_add_data('selectivizr', 'conditional', 'IE 8' );
+
 	}
 	
 	add_action( 'wp_enqueue_scripts', 'novalite_scripts_styles' );
@@ -398,42 +356,34 @@ if (!function_exists('novalite_setup')) {
 	
 		add_theme_support( 'title-tag' );
 	
-		if (novalite_setting('novalite_body_background')):
-			$background = novalite_setting('novalite_body_background');
-		else:
-			$background = "/assets/images/background/patterns/pattern12.jpg";
-		endif;
-		
 		add_theme_support( 'custom-background', array(
-			'default-color' => 'f3f3f3',
-			'default-image' => get_template_directory_uri() . $background,
+			'default-color' => 'cccccc'
 		) );
-	
-		add_image_size( 'blog', 1170,429, TRUE ); 
-		add_image_size( 'slide', 1170,429, TRUE ); 
-		
-		add_image_size( 'large', 449,304, TRUE ); 
-		add_image_size( 'medium', 290,220, TRUE ); 
-		add_image_size( 'small', 211,150, TRUE ); 
 
-		register_nav_menu( 'main-menu', 'Main menu' );
-	
-		load_theme_textdomain('novalite', get_template_directory() . '/languages');
-		
-		$require_array = array (
-			"/core/classes/",
-			"/core/admin/customize/",
-			"/core/functions/",
-			"/core/templates/",
-			"/core/metaboxes/",
+		load_theme_textdomain('nova-lite', get_template_directory() . '/languages');
+
+		add_image_size( 'nova_lite_blog', 1170,429, TRUE ); 
+
+		register_nav_menu(
+			'main-menu', esc_html__( 'Main menu', 'nova-lite' )
 		);
 		
-		foreach ( $require_array as $require_file ) {	
-		
-			novalite_require($require_file);
-		
-		}
-		
+		require_once( trailingslashit( get_template_directory() ) . 'core/classes/class-customize.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/classes/class-metaboxes.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/classes/class-notice.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/admin/customize/customize.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/functions/style.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/functions/widgets.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/templates/after-content.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/templates/before-content.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/templates/footer.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/templates/header.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/templates/media.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/templates/post-formats.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/templates/title.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/metaboxes/page.php' );
+		require_once( trailingslashit( get_template_directory() ) . 'core/metaboxes/post.php' );
+
 	}
 
 	add_action( 'after_setup_theme', 'novalite_setup' );

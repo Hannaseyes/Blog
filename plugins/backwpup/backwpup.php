@@ -5,30 +5,11 @@
  * Description: WordPress Backup Plugin
  * Author: Inpsyde GmbH
  * Author URI: http://inpsyde.com
- * Version: 3.6.7
+ * Version: 3.7.0
  * Text Domain: backwpup
  * Domain Path: /languages/
  * Network: true
- * License: GPLv3
- * License URI: http://www.gnu.org/licenses/gpl-3.0
- */
-
-/**
- *    Copyright (C) 2012-2016 Inpsyde GmbH (email: info@inpsyde.com)
- *
- *    This program is free software; you can redistribute it and/or
- *    modify it under the terms of the GNU General Public License
- *    as published by the Free Software Foundation; either version 2
- *    of the License, or (at your option) any later version.
- *
- *    This program is distributed in the hope that it will be useful,
- *    but WITHOUT ANY WARRANTY; without even the implied warranty of
- *    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *    GNU General Public License for more details.
- *
- *    You should have received a copy of the GNU General Public License
- *    along with this program; if not, write to the Free Software
- *    Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
+ * License: GPLv2+
  */
 
 if ( ! class_exists( 'BackWPup', false ) ) {
@@ -61,13 +42,12 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 				return;
 			}
 
-			if ( file_exists( dirname( __FILE__ ) . '/inc/functions.php' ) ) {
-				require_once dirname( __FILE__ ) . '/inc/functions.php';
-			}
+			require_once __DIR__ . '/inc/functions.php';
+			if (file_exists( __DIR__ . '/vendor/autoload.php')) {
+                require_once __DIR__ . '/vendor/autoload.php';
+            }
 
-			$this->set_autoloader();
-
-			self::$is_pro = class_exists( 'BackWPup_Pro', true );
+            self::$is_pro = file_exists(__DIR__ . '/inc/Pro/class-pro.php');
 
 			// Start upgrade if needed
 			if ( get_site_option( 'backwpup_version' ) !== self::get_plugin_data( 'Version' )
@@ -76,10 +56,11 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 				BackWPup_Install::activate();
 			}
 
-			// Load pro features
-			if ( self::$is_pro ) {
-				BackWPup_Pro::get_instance();
-			}
+            // Load pro features
+            if (self::$is_pro) {
+                require __DIR__ . '/inc/Pro/autoupdate.php';
+                BackWPup_Pro::get_instance();
+            }
 
 			// WP-Cron
 			if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
@@ -116,7 +97,7 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 				WP_CLI::add_command( 'backwpup', 'BackWPup_WP_CLI' );
 			}
 
-			if ( ! self::$is_pro ) {
+			if ( ! self::is_pro() ) {
 				$promoter_updater = new \Inpsyde\BackWPup\Notice\PromoterUpdater();
 				$promoter = new \Inpsyde\BackWPup\Notice\Promoter(
 					$promoter_updater,
@@ -134,7 +115,8 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 					}
 				);
 
-				$this->home_phone_client_init();
+                $isPHCActive = (bool)get_site_option('backwpup_cfg_phone_home_client', true);
+                $isPHCActive and $this->home_phone_client_init();
 			}
 		}
 
@@ -198,15 +180,15 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 				);
 				self::$plugin_data['name'] = trim( self::$plugin_data['name'] );
 				//set some extra vars
-				self::$plugin_data['basename'] = plugin_basename( dirname( __FILE__ ) );
+				self::$plugin_data['basename'] = plugin_basename( __DIR__ );
 				self::$plugin_data['mainfile'] = __FILE__;
-				self::$plugin_data['plugindir'] = untrailingslashit( dirname( __FILE__ ) );
+				self::$plugin_data['plugindir'] = untrailingslashit( __DIR__ );
 				self::$plugin_data['hash'] = get_site_option( 'backwpup_cfg_hash' );
 				if ( empty( self::$plugin_data['hash'] ) || strlen( self::$plugin_data['hash'] ) < 6
 				     || strlen(
 					        self::$plugin_data['hash']
 				        ) > 12 ) {
-					self::$plugin_data['hash'] = substr( md5( md5( __FILE__ ) ), 14, 6 );
+					self::$plugin_data['hash'] = self::get_generated_hash(6);
 					update_site_option( 'backwpup_cfg_hash', self::$plugin_data['hash'] );
 				}
 				if ( defined( 'WP_TEMP_DIR' ) && is_dir( WP_TEMP_DIR ) ) {
@@ -243,6 +225,25 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 				return self::$plugin_data;
 			}
 		}
+
+        /**
+         * Generates a random hash
+         *
+         * @param int $length
+         *
+         * @return string
+         */
+		public static function get_generated_hash( $length = 6 ) {
+
+		    $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+
+            $hash = '';
+            for ( $i = 0; $i < 254; $i++ ) {
+                $hash .= $chars[mt_rand(0, 61)];
+            }
+
+            return substr(md5($hash), mt_rand(0, 31 - $length), $length);
+        }
 
 		/**
 		 * Load Plugin Translation
@@ -310,7 +311,6 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 					'functions' => array(),
 					'classes' => array(),
 				),
-				'autoload' => array(),
 			);
 			// backup with mail
 			self::$registered_destinations['EMAIL'] = array(
@@ -326,7 +326,6 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 					'functions' => array(),
 					'classes' => array(),
 				),
-				'autoload' => array(),
 			);
 			// backup to ftp
 			self::$registered_destinations['FTP'] = array(
@@ -342,7 +341,6 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 					'functions' => array( 'ftp_nb_fput' ),
 					'classes' => array(),
 				),
-				'autoload' => array(),
 			);
 			// backup to dropbox
 			self::$registered_destinations['DROPBOX'] = array(
@@ -358,7 +356,6 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 					'functions' => array( 'curl_exec' ),
 					'classes' => array(),
 				),
-				'autoload' => array(),
 			);
 			// Backup to S3
 			self::$registered_destinations['S3'] = array(
@@ -374,12 +371,6 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 					'functions' => array( 'curl_exec' ),
 					'classes' => array( 'XMLWriter' ),
 				),
-				'autoload' => array(
-					'Aws\\Common' => dirname( __FILE__ ) . '/vendor',
-					'Aws\\S3' => dirname( __FILE__ ) . '/vendor',
-					'Symfony\\Component\\EventDispatcher' => dirname( __FILE__ ) . '/vendor',
-					'Guzzle' => dirname( __FILE__ ) . '/vendor',
-				),
 			);
 			// backup to MS Azure
 			self::$registered_destinations['MSAZURE'] = array(
@@ -391,11 +382,10 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 				),
 				'can_sync' => false,
 				'needed' => array(
-					'php_version' => '',
+					'php_version' => '5.6.0',
 					'functions' => array(),
 					'classes' => array(),
 				),
-				'autoload' => array( 'WindowsAzure' => dirname( __FILE__ ) . '/vendor' ),
 			);
 			// backup to Rackspace Cloud
 			self::$registered_destinations['RSC'] = array(
@@ -407,14 +397,9 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 				),
 				'can_sync' => false,
 				'needed' => array(
-					'php_version' => '5.4',
+					'php_version' => '',
 					'functions' => array( 'curl_exec' ),
 					'classes' => array(),
-				),
-				'autoload' => array(
-					'OpenCloud' => dirname( __FILE__ ) . '/vendor',
-					'Guzzle' => dirname( __FILE__ ) . '/vendor',
-					'Psr' => dirname( __FILE__ ) . '/vendor',
 				),
 			);
 			// backup to Sugarsync
@@ -431,7 +416,6 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 					'functions' => array( 'curl_exec' ),
 					'classes' => array(),
 				),
-				'autoload' => array(),
 			);
 
 			//Hook for adding Destinations like above
@@ -543,24 +527,6 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 		}
 
 		/**
-		 * Set autoloader
-		 *
-		 * @return void
-		 */
-		private function set_autoloader() {
-
-			// Composer Autoloader
-			$autoloader = untrailingslashit( BackWPup::get_plugin_data( 'plugindir' ) ) . '/vendor/autoload.php';
-			if ( file_exists( $autoloader ) ) {
-				require_once $autoloader;
-			}
-
-			// BackWPup Autoloader
-			require_once self::get_plugin_data( 'plugindir' ) . '/inc/class-autoload.php';
-			spl_autoload_register( array( new BackWPup_Autoload(), 'autoloader' ) );
-		}
-
-		/**
 		 * Initialize Home Phone Client
 		 *
 		 * @return void
@@ -573,7 +539,7 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 
 			Inpsyde_PhoneHome_FrontController::initialize_for_network(
 				'BackWPup',
-				dirname( __FILE__ ) . '/assets/templates/phpnotice',
+				__DIR__ . '/assets/templates/phpnotice',
 				'backwpup',
 				array(
 					Inpsyde_PhoneHome_Configuration::ANONYMIZE => true,
@@ -598,7 +564,7 @@ if ( ! class_exists( 'BackWPup', false ) ) {
 		die(
 		sprintf(
 			esc_html__(
-				'BackWPup requires PHP version %$1s with spl extension or greater and WordPress %$2s or greater.',
+				'BackWPup requires PHP version %1$s with spl extension or greater and WordPress %2$s or greater.',
 				'backwpup'
 			),
 			$system_requirements->php_minimum_version(),

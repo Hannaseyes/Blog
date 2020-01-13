@@ -4,13 +4,13 @@
 	<div class="container">
     	<div class="row">
             <div class="span12">
-				<h1><?php esc_html_e( 'Not found','novalite'); ?> </h1>
+				<h1><?php esc_html_e( 'Not found','nova-lite'); ?> </h1>
             </div>        
 		</div>
     </div>
 </section>
 
-<div class="container" style="position:relative">
+<div id="content" class="container" style="position:relative">
 	<div class="row" id="portfolio" >
 		
 		
@@ -18,7 +18,7 @@
 
 			<article class="article">
             
-				<p><?php esc_html_e( 'Sorry, no posts matched your criteria','novalite'); ?> </p>
+				<p><?php esc_html_e( 'Sorry, no posts matched your criteria','nova-lite'); ?> </p>
  
 			</article>
 
